@@ -22,7 +22,6 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.csus.ecs.pc2.api.IContest;
@@ -45,6 +44,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	
 	//The novice file - should be an advanced one too
 	public static final String NOVICE_TEAMS = "novice.txt";
+	public static final String ADVANCE_TEAMS = "advanced.txt";
 	
 	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 16);
 	public static final int CHAR_WIDTH = 11;
@@ -89,9 +89,10 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			System.exit(1);
 		}
 		
+		//Do advanced too
 		while (in.hasNext())
 		{
-			novTeams.add(in.nextLine());
+			novTeams.add("Team " + in.nextLine());
 		}
 		
 		in.close();
