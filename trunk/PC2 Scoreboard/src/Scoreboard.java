@@ -1,3 +1,4 @@
+package src;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -36,15 +37,13 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	//Ignore
 	private static final long serialVersionUID = -7302013807793076433L;
 	
-	//This is from when the score was the same per problem - must be rewritten
-	public static final int PROB_SCORE = 60;
-	
 	//A Background image - Matthew will rewrite this part
 	public static final String BACKGROUND = "background.png";
 	
 	//The novice file - should be an advanced one too
 	public static final String NOVICE_TEAMS = "novice.txt";
-	public static final String ADVANCE_TEAMS = "advanced.txt";
+	public static final String ADVANCED_TEAMS = "advanced.txt";
+	public static final String SCORE_VALUES = "score values.txt";
 	
 	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 16);
 	public static final int CHAR_WIDTH = 11;
@@ -54,11 +53,17 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	//Self explanatory
 	private static final int WINDOW_WIDTH = 500, WINDOW_HEIGHT=500;
 	
+	// Maps problems to point values
+	static HashMap<String, Integer> scoreValues;
+	
 	// Stores scores of teams
 	static HashMap<String, Point> scores;
 	
 	// List of novice teams
 	static HashSet<String> novTeams;
+	
+	// List of advanced teams
+	static HashSet<String> advTeams;
 	
 	//PC^2 contest object
 	IContest contest;
@@ -73,9 +78,10 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	
 	public Scoreboard()
 	{
-		//Need to construct/read advanced teams too
+		scoreValues = new HashMap<String, Integer>();
 		scores = new HashMap<String, Point>();
 		novTeams = new HashSet<String>();
+		advTeams = new HashSet<String>();
 		
 		Scanner in = null;
 		try
@@ -89,14 +95,43 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			System.exit(1);
 		}
 		
-		//Do advanced too
 		while (in.hasNext())
 		{
 			novTeams.add("Team " + in.nextLine());
 		}
-		
 		in.close();
 		
+		try
+		{
+			in = new Scanner(new File(ADVANCED_TEAMS));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		while (in.hasNext())
+		{
+			advTeams.add("Team " + in.nextLine());
+		}
+		in.close();
+		
+		try
+		{
+			in = new Scanner(new File(SCORE_VALUES));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		while(in.hasNext())
+		{
+			String scoreval = in.nextLine();
+			scoreValues.put(scoreval.split("/")[0], Integer.parseInt(scoreval.split("/")[1]));
+		}
 		File backgroundFile = new File(BACKGROUND);
 		if(backgroundFile.exists())
 			try
@@ -183,9 +218,13 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			{
 				s1.add(sc);
 			}
-			else
+			else if (sc.name.contains("nov"))
 			{
 				s2.add(sc);
+			}
+			else
+			{
+				System.out.println("Erroneous team added");
 			}
 		}
 		
@@ -224,11 +263,20 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		if (!scores.containsKey(name))
 			return;
 		
+		
 		if (run.getJudgementName().equals("Yes") && !run.isDeleted())
 		{
 			Point prevScore = scores.get(name);
 			int score = (int) prevScore.getX();
-			score += (add ? 1 : -1) * PROB_SCORE;
+			try
+			{
+				score += (add ? 1 : -1) * scoreValues.get(run.getProblem().getName());
+			}
+			catch (NullPointerException e)
+			{
+				e.printStackTrace();
+				System.exit(1);
+			}
 			int time2 = (int) prevScore.getY();
 			int time = Math.max((int) run.getSubmissionTime(), time2);
 			scores.put(name, new Point(score, time));
