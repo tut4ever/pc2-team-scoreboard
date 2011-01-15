@@ -1,3 +1,4 @@
+package cs.clements.pc2.scoreboard;
 
 import java.awt.Color;
 import java.awt.Font;
