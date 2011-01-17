@@ -1,0 +1,25 @@
+CSUS Programming Contest System
+Version 9.2 20101104 (Thursday, November 4th 2010 04:31 UTC) Java ver 1.6.0_22 build 2251 Windows 7 6.1 (x86) 
+Contest Title: Programming Contest
+On: Sunday, January 16, 2011 5:42:08 PM CST
+  Contest date/time: Tue Jan 11 23:53:47 CST 2011
+
+** Logins Report
+Site 1
+
+
+-- Local Logins -- 
+Logged in ADMINISTRATOR
+   ADMINISTRATOR1 @ site 1 on FauxSite1ADMINISTRATOR1 @ site 1-4218703019934858298
+Logged in TEAM
+   TEAM3 @ site 1 on Socket[addr=/127.0.0.1,port=14422,localport=50002]-7952132728217984144
+   TEAM1 @ site 1 on Socket[addr=/127.0.0.1,port=14417,localport=50002]--8883422621718959055
+
+-- Remote Logins -- 
+
+-- Connection Ids  -- 
+ client TEAM3 @ site 1   Socket[addr=/127.0.0.1,port=14422,localport=50002]-7952132728217984144
+ client TEAM1 @ site 1   Socket[addr=/127.0.0.1,port=14417,localport=50002]--8883422621718959055
+   Socket[addr=/127.0.0.1,port=14409,localport=50002]--8420764342277436027
+
+end report
