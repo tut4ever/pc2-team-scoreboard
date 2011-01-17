@@ -10,7 +10,7 @@ public class Parser
 	
 	public static void main(String...args)
 	{
-		System.out.println(new Parser("connections"));	
+		System.out.println(new Parser("connections.txt"));	
 	}
 	
 	public Parser(String file)
@@ -28,7 +28,7 @@ public class Parser
 		
 		while((connection=in.nextLine()).contains("   TEAM"))
 		{
-			connections.put(connection.split(" ")[3],connection.split(" ")[8].substring(13,22));
+			connections.put(connection.split(" ")[3],connection.substring(connection.indexOf("/")+1,connection.indexOf(",")));
 		}
 	}
 	public String toString()
