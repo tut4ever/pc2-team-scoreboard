@@ -172,6 +172,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		catch (LoginFailureException e)
 		{
 			System.out.println("Incorrect Login. Please check the file and try again.");
+			System.exit(1);
 		}
 		
 		//Gets Scores from PC^2
