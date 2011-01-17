@@ -27,6 +27,7 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 	private static final int REFRESH_TIME = 30000;
 	private IContest contest;
 	private ServerConnection server;
+	private JFrame frame;
 	
 	private HashSet<Integer> trackedRuns;
 	public SQLPC2Link(String...args)
@@ -62,11 +63,13 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 			System.exit(1);
 		}
 		
-		JFrame frame = new JFrame("PC^2 --> SQL Link");
-		frame.setSize(500,500);
+		frame = new JFrame("PC^2 --> SQL Link");
+		frame.setSize(50,50);
+		frame.setResizable(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.addWindowListener(this);
 		frame.addKeyListener(this);	
+		frame.setVisible(true);
 		
 		new Timer(REFRESH_TIME, this).start();
 	}
@@ -76,6 +79,7 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 	private int runNumber;
 	private void getRuns()
 	{
+		frame.setTitle("Refreshing... " + "PC^2 --> SQL Link");
 		runs = contest.getRuns();
 		for(IRun run: runs)
 		{
@@ -124,6 +128,8 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 			
 		}
 		
+		
+		frame.setTitle("PC^2 --> SQL Link");
 		
 		
 	}
