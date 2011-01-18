@@ -130,8 +130,8 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		while(in.hasNext())
 		{
-			String scoreval = in.nextLine();
-			scoreValues.put(scoreval.split("/")[0], Integer.parseInt(scoreval.split("/")[1]));
+			String[] scoreval = in.nextLine().split("/");
+			scoreValues.put(scoreval[0], Integer.parseInt(scoreval[1]));
 		}
 		File backgroundFile = new File(BACKGROUND);
 		if(backgroundFile.exists())
@@ -287,6 +287,53 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 	}
 	
+	public void reloadScores()
+	{
+		scores.clear();
+		actionPerformed(null);
+	}
+	public void reloadTeams()
+	{
+		novTeams = new HashSet<String>();
+		advTeams = new HashSet<String>();
+		
+		Scanner in = null;
+		try
+		{
+			in = new Scanner(new File(NOVICE_TEAMS));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		while (in.hasNext())
+		{
+			novTeams.add("Team " + in.nextLine());
+		}
+		in.close();
+		
+		try
+		{
+			in = new Scanner(new File(ADVANCED_TEAMS));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		while (in.hasNext())
+		{
+			advTeams.add("Team " + in.nextLine());
+		}
+		in.close();
+		
+		System.out.println("Teams reloaded");
+		
+	}
 	public void runCheckedOut(IRun run, boolean isFinal) {}
 	public void runCompiling(IRun run, boolean isFinal) {}
 	
@@ -304,11 +351,23 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	
 	public void runValidating(IRun run, boolean isFinal) {}
 	
-	public void keyReleased(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) 
+	{
+		
+	}
 	public void keyTyped(KeyEvent e) {}
 	
 	public void keyPressed(KeyEvent e)
 	{
+	//I seem to have forgotten how to check keypresses correctly
+		
+		/*	if(e.equals(KeyEvent.VK_R))
+			reloadTeams();
+		if(e.equals(KeyEvent.VK_S))
+		{
+			reloadScoreTable();
+			System.out.println("Reload scores");
+		}*/
 		actionPerformed(null);
 	}
 	
