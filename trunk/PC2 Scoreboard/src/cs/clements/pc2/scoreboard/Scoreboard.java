@@ -91,7 +91,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("Novice list (" + NOVICE_TEAMS + ") not found");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -108,7 +108,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("Advanced list (" + ADVANCED_TEAMS + ") not found");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -124,7 +124,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("Score values list (" + SCORE_VALUES + ") not found");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -144,6 +144,8 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		else
+			System.out.println("Background File (" + BACKGROUND + ") not found. Moving on...");	
 		
 		//Connects to the PC^2 server
 		ServerConnection server = new ServerConnection();
@@ -154,7 +156,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		catch (FileNotFoundException e1)
 		{
-			System.out.println("No login file. Please create login.txt and try again");
+			System.out.println("No login file (login.txt). Please create login.txt and try again");
 			System.exit(1);
 		}
 		
