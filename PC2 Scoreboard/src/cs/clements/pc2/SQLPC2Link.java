@@ -22,6 +22,7 @@ import edu.csus.ecs.pc2.api.ServerConnection;
 import edu.csus.ecs.pc2.api.exceptions.LoginFailureException;
 import edu.csus.ecs.pc2.api.listener.IRunEventListener;
 
+//Will store runs in the SQL database
 public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, IRunEventListener 
 {
 	private static final int REFRESH_TIME = 30000;
