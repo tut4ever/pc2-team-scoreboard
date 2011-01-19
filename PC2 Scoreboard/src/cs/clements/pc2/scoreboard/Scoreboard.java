@@ -98,7 +98,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		while (in.hasNext())
 		{
-			novTeams.add("Team " + in.nextLine());
+			novTeams.add("team" + in.nextLine());
 		}
 		in.close();
 		
@@ -114,7 +114,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		while (in.hasNext())
 		{
-			advTeams.add("Team " + in.nextLine());
+			advTeams.add("team" + in.nextLine());
 		}
 		in.close();
 		
@@ -261,8 +261,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	public void addRun(IRun run, boolean add)
 	{
 		ITeam team = run.getTeam();
-		String name = team.getDisplayName();
-		name += novTeams.contains(name) ? " (nov)" : " (adv)";
+		String name = team.getLoginName();
+		if(novTeams.contains(name))
+			name ="Team "+name.charAt(name.length()-1)+" (nov)";
+		else if(advTeams.contains(name))
+			name ="Team "+name.charAt(name.length()-1)+" (adv)";
+		
 		
 		if (!scores.containsKey(name))
 			return;
@@ -288,12 +292,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			repaint();
 		}
 	}
-	
-	public void reloadScores()
-	{
-		scores.clear();
-		actionPerformed(null);
-	}
+
 	public void reloadTeams()
 	{
 		novTeams = new HashSet<String>();
@@ -313,7 +312,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		while (in.hasNext())
 		{
-			novTeams.add("Team " + in.nextLine());
+			novTeams.add("team" + in.nextLine());
 		}
 		in.close();
 		
@@ -329,7 +328,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		}
 		while (in.hasNext())
 		{
-			advTeams.add("Team " + in.nextLine());
+			advTeams.add("team" + in.nextLine());
 		}
 		in.close();
 		
@@ -358,18 +357,11 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 	}
 	public void keyTyped(KeyEvent e) {}
-	
 	public void keyPressed(KeyEvent e)
 	{
-	//I seem to have forgotten how to check keypresses correctly
-		
-		/*	if(e.equals(KeyEvent.VK_R))
-			reloadTeams();
-		if(e.equals(KeyEvent.VK_S))
-		{
-			reloadScoreTable();
-			System.out.println("Reload scores");
-		}*/
+		if(e.getKeyCode()==KeyEvent.VK_R)
+				reloadTeams();
+	
 		actionPerformed(null);
 	}
 	
@@ -382,8 +374,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		{
 			if (team.isDisplayableOnScoreboard())
 			{
-				String name = team.getDisplayName();
-				name += novTeams.contains(name) ? " (nov)" : " (adv)";
+				String name = team.getLoginName();
+				if (novTeams.contains(name))
+					name ="Team "+name.charAt(name.length()-1)+" (nov)";
+				else if (advTeams.contains(name))
+					name ="Team "+name.charAt(name.length()-1)+" (adv)";
+				else continue;
 				
 				scores.put(name, new Point(0, 0));
 			}
