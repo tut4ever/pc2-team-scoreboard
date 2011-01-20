@@ -12,8 +12,8 @@ Site 1
 Logged in ADMINISTRATOR
    ADMINISTRATOR1 @ site 1 on FauxSite1ADMINISTRATOR1 @ site 1-4218703019934858298
 Logged in TEAM
-   TEAM3 @ site 1 on Socket[addr=/127.0.0.1,port=14422,localport=50002]-7952132728217984144
-   TEAM1 @ site 1 on Socket[addr=/127.0.0.1,port=14417,localport=50002]--8883422621718959055
+   TEAM3 @ site 1 on Socket[addr=/255.255.255.255,port=14422,localport=50002]-7952132728217984144
+   TEAM1 @ site 1 on Socket[addr=/1.1.1.1,port=14417,localport=50002]--8883422621718959055
 
 -- Remote Logins -- 
 

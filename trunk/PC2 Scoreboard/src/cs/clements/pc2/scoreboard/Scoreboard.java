@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
@@ -21,6 +22,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -42,9 +45,9 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	public static final String BACKGROUND = "background.png";
 	
 	//The novice file - should be an advanced one too
-	public static final String NOVICE_TEAMS = "novice.txt";
-	public static final String ADVANCED_TEAMS = "advanced.txt";
-	public static final String SCORE_VALUES = "score values.txt";
+	public static final String NOVICE_TEAMS = new File("novice.txt").exists() ? "novice.txt" : "http://127.0.0.1/scoreboard/novice.txt";
+	public static final String ADVANCED_TEAMS = new File("advanced.txt").exists() ? "advanced.txt" : "http://127.0.0.1/scoreboard/advanced.txt";
+	public static final String SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : "http://127.0.0.1/scoreboard/score_values.txt";
 	
 	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 16);
 	public static final int CHAR_WIDTH = 11;
@@ -87,13 +90,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		Scanner in = null;
 		try
 		{
-			in = new Scanner(new File(NOVICE_TEAMS));
+			in = new Scanner((new URI(NOVICE_TEAMS).isAbsolute() ? new URI(NOVICE_TEAMS).toURL().openStream() : new FileInputStream(new File(new URI(NOVICE_TEAMS).toString()))));
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
 			System.out.println("Novice list (" + NOVICE_TEAMS + ") not found");
 			e.printStackTrace();
-			System.exit(1);
 		}
 		
 		while (in.hasNext())
@@ -104,13 +106,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		try
 		{
-			in = new Scanner(new File(ADVANCED_TEAMS));
+			in = new Scanner((new URI(ADVANCED_TEAMS).isAbsolute() ? new URI(ADVANCED_TEAMS).toURL().openStream() : new FileInputStream(new File(new URI(ADVANCED_TEAMS).toString()))));
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
 			System.out.println("Advanced list (" + ADVANCED_TEAMS + ") not found");
 			e.printStackTrace();
-			System.exit(1);
 		}
 		while (in.hasNext())
 		{
@@ -120,13 +121,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		try
 		{
-			in = new Scanner(new File(SCORE_VALUES));
+			in = new Scanner((new URI(SCORE_VALUES).isAbsolute() ? new URI(SCORE_VALUES).toURL().openStream() : new FileInputStream(new File(new URI(SCORE_VALUES).toString()))));
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
 			System.out.println("Score values list (" + SCORE_VALUES + ") not found");
 			e.printStackTrace();
-			System.exit(1);
 		}
 		while(in.hasNext())
 		{
@@ -152,14 +152,22 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		try
 		{
-			in = new Scanner(new File("login.txt"));
+			//Yay for convoluted one-liners
+			in = new File("login.txt").exists() ? new Scanner( new File("login.txt")) : new Scanner(new URI("http://127.0.0.1/scoreboard/login.txt").toURL().openStream());
 		}
 		catch (FileNotFoundException e1)
 		{
 			System.out.println("No login file (login.txt). Please create login.txt and try again");
-			System.exit(1);
 		}
-		
+		catch (IOException e1)
+		{
+			System.out.println("IOException");
+		}
+		catch (URISyntaxException e1)
+		{
+			System.out.println("URISyntax");
+		}
+
 		//This could be a lot nicer, but there's no need
 		String login = in.nextLine();
 		String password = in.nextLine();
@@ -174,7 +182,6 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		catch (LoginFailureException e)
 		{
 			System.out.println("Incorrect Login. Please check the file and try again.");
-			System.exit(1);
 		}
 		
 		//Gets Scores from PC^2
@@ -263,9 +270,9 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		ITeam team = run.getTeam();
 		String name = team.getLoginName();
 		if(novTeams.contains(name))
-			name ="Team "+name.charAt(name.length()-1)+" (nov)";
+			name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (nov)";
 		else if(advTeams.contains(name))
-			name ="Team "+name.charAt(name.length()-1)+" (adv)";
+			name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (adv)";
 		
 		
 		if (!scores.containsKey(name))
@@ -283,7 +290,6 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			catch (NullPointerException e)
 			{
 				e.printStackTrace();
-				System.exit(1);
 			}
 			int time2 = (int) prevScore.getY();
 			int time = Math.max((int) run.getSubmissionTime(), time2);
@@ -301,13 +307,12 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		Scanner in = null;
 		try
 		{
-			in = new Scanner(new File(NOVICE_TEAMS));
+			in = new Scanner((new URI(NOVICE_TEAMS).isAbsolute() ? new URI(NOVICE_TEAMS).toURL().openStream() : new FileInputStream(new File(new URI(NOVICE_TEAMS).toString()))));
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("Novice list (" + NOVICE_TEAMS + ") not found");
 			e.printStackTrace();
-			System.exit(1);
 		}
 		
 		while (in.hasNext())
@@ -318,19 +323,19 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		
 		try
 		{
-			in = new Scanner(new File(ADVANCED_TEAMS));
+			in = new Scanner((new URI(ADVANCED_TEAMS).isAbsolute() ? new URI(ADVANCED_TEAMS).toURL().openStream() : new FileInputStream(new File(new URI(ADVANCED_TEAMS).toString()))));
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("Advanced list (" + ADVANCED_TEAMS + ") not found");
 			e.printStackTrace();
-			System.exit(1);
 		}
 		while (in.hasNext())
 		{
 			advTeams.add("team" + in.nextLine());
 		}
 		in.close();
+		
 		
 		System.out.println("Teams reloaded");
 		
@@ -376,9 +381,9 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			{
 				String name = team.getLoginName();
 				if (novTeams.contains(name))
-					name ="Team "+name.charAt(name.length()-1)+" (nov)";
+					name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (nov)";
 				else if (advTeams.contains(name))
-					name ="Team "+name.charAt(name.length()-1)+" (adv)";
+					name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (adv)";
 				else continue;
 				
 				scores.put(name, new Point(0, 0));
