@@ -239,13 +239,13 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			
 			@SuppressWarnings("unused")
-			LinkedList<TeamScore> list = sc.name.contains("(adv)") ? s1 : s2;
+			LinkedList<TeamScore> list = advTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)) ? s1 : s2;
 			
-			if (sc.name.contains("adv"))
+			if (advTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)))
 			{
 				s1.add(sc);
 			}
-			else if (sc.name.contains("nov"))
+			else if (novTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)))
 			{
 				s2.add(sc);
 			}
@@ -259,6 +259,10 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		Collections.sort(s2);
 		
 		Iterator<TeamScore> i2 = s1.iterator();
+		g.setFont(g.getFont().deriveFont(Font.BOLD,22));
+		g.drawString("Advanced", 360, 30);
+		g.drawString("Novice", 375, 290);
+		g.setFont(g.getFont().deriveFont(Font.BOLD,16));
 		
 		for (int x = 1; i2.hasNext() && x <= 10; x++)
 		{
@@ -266,7 +270,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, 250 - lineWidth / 2, 10 + 20 * x);
+			g.drawString(line, 400 - lineWidth / 2, 50 + 20 * x);
 		}
 		
 		i2 = s2.iterator();
@@ -277,7 +281,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, 250 - lineWidth / 2, 220 + 20 * x);
+			g.drawString(line, 400 - lineWidth / 2, 310 + 20 * x);
 		}
 	}
 	
@@ -286,9 +290,9 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		ITeam team = run.getTeam();
 		String name = team.getLoginName();
 		if(novTeams.contains(name))
-			name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (nov)";
+			name ="Team "+name.substring(name.lastIndexOf("m")+1);
 		else if(advTeams.contains(name))
-			name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (adv)";
+			name ="Team "+name.substring(name.lastIndexOf("m")+1);
 		
 		
 		if (!scores.containsKey(name))
@@ -398,9 +402,9 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			{
 				String name = team.getLoginName();
 				if (novTeams.contains(name))
-					name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (nov)";
+					name ="Team "+name.substring(name.lastIndexOf("m")+1);
 				else if (advTeams.contains(name))
-					name ="Team "+name.substring(name.lastIndexOf("m")+1)+" (adv)";
+					name ="Team "+name.substring(name.lastIndexOf("m")+1);
 				else continue;
 				
 				scores.put(name, new Point(0, 0));
