@@ -1,11 +1,21 @@
 import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Checker
 {
 	@SuppressWarnings("unused")
 	private String inputfilename, outputfilename, answerfilename, resultfilename;
 	private String[]kevin;
+	
+	private Connection con;
+	private Statement s;
 	
 	private static final String 
 		noError = "NO ERROR", 
@@ -155,8 +165,100 @@ public class Checker
 					dprintln("Error Writing Result File. Debug Information COULD NOT be written to Debug Information.txt - Contact a contest administrator immediately!");
 			}
 			
+			try
+			{
+				try
+				{
+					Class.forName("com.mysql.jdbc.Driver");
+				}
+				catch (ClassNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+				
+				
+				String url = "jdbc:mysql://192.168.0.1:3306";
+
+				con = DriverManager.getConnection(url,"validator","contest3");			
+				s = con.createStatement();
+				
+				File folder = new File(".");
+				
+				File[]files = folder.listFiles();
+				
+				File javaFile = null;
+				for(File a: files)
+				{
+					String name = a.getName();
+					String ext = (name.contains(".") && name.length() >= name.indexOf(".") + 1 ?name.substring(name.indexOf(".") + 1):name);
+					
+					if(ext.toLowerCase().equals("java"))
+					{
+						javaFile = a;
+						break;
+					}
+				}
+				
+				if(javaFile == null)
+				{
+					dprintln("NO JAVA FILE FOUND");
+					throw new Exception("NO JAVA FILE FOUND");				
+				}
+				
+				byte[] sourceFile = getBytesFromFile(javaFile);
+				String md5;
+				
+				
+				try
+				{
+					MessageDigest algorithm = MessageDigest.getInstance("MD5");
+					algorithm.reset();
+					algorithm.update(sourceFile);
+					byte messageDigest[] = algorithm.digest();
+				            
+					StringBuffer hexString = new StringBuffer();
+					for (int i=0;i<messageDigest.length;i++)
+					{
+						hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+					}
+					
+					md5 = hexString.toString();
+					
+				}
+				catch(NoSuchAlgorithmException e)
+				{
+					System.out.println("MD5 Error");
+					writeDebug();
+					e.printStackTrace();
+					System.exit(1);
+				}
+				
+				/*
+				 * 
+				 * if(SELECT * FROM errors WHERE md5=java md5)
+				 * 	UPDATE errors SET error= java error WHERE md5=java md5 LIMIT 1;
+				 * else
+				 * 	INSERT INTO errors (md5, error) VALUES ('md5'),( 'error')
+				 * 
+				 * 
+				 * 
+				 * 
+				 */
+				
+				con.close();
+				
+				
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				dprintln("VALIDATOR SQL EXCEPTION!");
+				dprintln(Arrays.toString(e.getStackTrace()));
+			}
+			
+			
 			//Debug - Writes the response to a file
-			writeResponseToFile(response,viewableResponse);
+			//writeResponseToFile(response,viewableResponse);
 			
 			
 		}
@@ -169,7 +271,32 @@ public class Checker
 				dprintln("Exception + Debug Exception. Debug File Not Written. - Contact a contest administrator immediately!");
 		}
 	}
-	
+	private byte[] getBytesFromFile(File file) throws Exception
+	{
+		InputStream is = new FileInputStream(file);
+		long length = file.length();
+		if(length > Integer.MAX_VALUE)
+		{
+			throw new Exception("File is too long");
+		}
+		
+		byte [] bytes = new byte[(int)length];
+		int offset = 0;
+		int numRead = 0;
+		while(offset < bytes.length && (numRead = is.read(bytes,offset, bytes.length-offset)) >= 0)
+		{
+			offset += numRead;
+		}
+		
+		if(offset < bytes.length)
+		{
+			throw new IOException ("Could not completely read file " + file.getName());
+		}
+		
+		is.close();
+		return bytes;
+	}
+	@SuppressWarnings("unused")
 	private void writeResponseToFile(String response, String viewableResponse)
 	{
 		try
@@ -305,3 +432,4 @@ public class Checker
 		
 	}
 }
+

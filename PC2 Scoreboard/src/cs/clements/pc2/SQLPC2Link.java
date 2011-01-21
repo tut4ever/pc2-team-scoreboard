@@ -120,11 +120,21 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 					System.exit(1);
 				}
 				
-				
 				//Team Number: run.getTeam().getAccountNumber()
 				//md5 = md5
+				//Run Number = runNumber
 				
-				//TODO: INSERT INTO x () VALUES Team number, MD5 of source
+				/*
+				 * 
+				 * if(SELECT * FROM errors WHERE md5=java md5)
+				 * 	UPDATE errors SET team=team number, run=run number WHERE md5=java md5 LIMIT 1;
+				 * else
+				 * 	INSERT INTO errors (run, team, md5) VALUES ('','','')
+				 * 
+				 * 
+				 * 
+				 * 
+				 */
 			}
 			
 		}
