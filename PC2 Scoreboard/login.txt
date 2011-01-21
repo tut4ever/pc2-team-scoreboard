@@ -1,2 +1,2 @@
-scoreboard1
-scoreboard1
+scoreboard2
+scoreboard2

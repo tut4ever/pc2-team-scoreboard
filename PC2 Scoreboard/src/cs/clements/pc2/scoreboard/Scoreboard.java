@@ -41,13 +41,14 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	//Ignore
 	private static final long serialVersionUID = -7302013807793076433L;
 	
-	//A Background image - Matthew will rewrite this part
 	public static final String BACKGROUND = "background.png";
 	
-	//The novice file - should be an advanced one too
-	public static final String NOVICE_TEAMS = new File("novice.txt").exists() ? "novice.txt" : "http://127.0.0.1/scoreboard/novice.txt";
-	public static final String ADVANCED_TEAMS = new File("advanced.txt").exists() ? "advanced.txt" : "http://127.0.0.1/scoreboard/advanced.txt";
-	public static final String SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : "http://127.0.0.1/scoreboard/score_values.txt";
+	private String SERVER_IP = "http://127.0.0.1";
+	
+	//Made these non-static because of the IP
+	public String NOVICE_TEAMS = new File("novice.txt").exists() ? "novice.txt" : SERVER_IP + "/scoreboard/novice.txt";
+	public String ADVANCED_TEAMS = new File("advanced.txt").exists() ? "advanced.txt" : SERVER_IP + "/scoreboard/advanced.txt";
+	public String SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : SERVER_IP + "/scoreboard/score_values.txt";
 	
 	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 16);
 	public static final int CHAR_WIDTH = 11;
@@ -55,7 +56,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	//public static final int REFRESH_TIME = 60000;
 	
 	//Self explanatory
-	private static final int WINDOW_WIDTH = 500, WINDOW_HEIGHT=500;
+	private static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT=600;
 	
 	// Maps problems to point values
 	static HashMap<String, Integer> scoreValues;
@@ -88,6 +89,23 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		advTeams = new HashSet<String>();
 		
 		Scanner in = null;
+		try
+		{
+			in = new Scanner(new File("IP.txt"));
+			SERVER_IP = in.nextLine();
+			
+			NOVICE_TEAMS = new File("novice.txt").exists() ? "novice.txt" : SERVER_IP + "/scoreboard/novice.txt";
+			ADVANCED_TEAMS = new File("advanced.txt").exists() ? "advanced.txt" : SERVER_IP + "/scoreboard/advanced.txt";
+			SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : SERVER_IP + "/scoreboard/score_values.txt";
+		}
+		catch(Exception e)
+		{
+			System.out.println("IP File (IP.txt) error");
+			e.printStackTrace();
+		}
+		in.close();
+		
+		
 		try
 		{
 			in = new Scanner((new URI(NOVICE_TEAMS).isAbsolute() ? new URI(NOVICE_TEAMS).toURL().openStream() : new FileInputStream(new File(new URI(NOVICE_TEAMS).toString()))));
@@ -144,16 +162,14 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		else
-			System.out.println("Background File (" + BACKGROUND + ") not found. Moving on...");	
-		
+			
 		//Connects to the PC^2 server
 		ServerConnection server = new ServerConnection();
 		
 		try
 		{
 			//Yay for convoluted one-liners
-			in = new File("login.txt").exists() ? new Scanner( new File("login.txt")) : new Scanner(new URI("http://127.0.0.1/scoreboard/login.txt").toURL().openStream());
+			in = new File("login.txt").exists() ? new Scanner( new File("login.txt")) : new Scanner(new URI(SERVER_IP + "/scoreboard/login.txt").toURL().openStream());
 		}
 		catch (FileNotFoundException e1)
 		{
@@ -289,7 +305,8 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			}
 			catch (NullPointerException e)
 			{
-				e.printStackTrace();
+				//Problem on PC^2 
+				System.out.println("Problem Not Found: " + run.getProblem().getName());
 			}
 			int time2 = (int) prevScore.getY();
 			int time = Math.max((int) run.getSubmissionTime(), time2);
