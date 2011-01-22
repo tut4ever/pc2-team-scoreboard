@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -50,13 +51,13 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	public String ADVANCED_TEAMS = new File("advanced.txt").exists() ? "advanced.txt" : SERVER_IP + "/scoreboard/advanced.txt";
 	public String SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : SERVER_IP + "/scoreboard/score_values.txt";
 	
-	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 16);
+	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 22);
 	public static final int CHAR_WIDTH = 11;
 	
 	//public static final int REFRESH_TIME = 60000;
 	
 	//Self explanatory
-	private static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT=600;
+	private static final int WINDOW_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width, WINDOW_HEIGHT=Toolkit.getDefaultToolkit().getScreenSize().height;
 	
 	// Maps problems to point values
 	static HashMap<String, Integer> scoreValues;
@@ -259,10 +260,10 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		Collections.sort(s2);
 		
 		Iterator<TeamScore> i2 = s1.iterator();
+		g.setFont(g.getFont().deriveFont(Font.BOLD,28));
+		g.drawString("Advanced", WINDOW_WIDTH/2 - CHAR_WIDTH * "Advanced".length() / 2, 30);
+		g.drawString("Novice", WINDOW_WIDTH/2 - CHAR_WIDTH * "Novice".length() / 2, WINDOW_HEIGHT/2 - 10);
 		g.setFont(g.getFont().deriveFont(Font.BOLD,22));
-		g.drawString("Advanced", 360, 30);
-		g.drawString("Novice", 375, 290);
-		g.setFont(g.getFont().deriveFont(Font.BOLD,16));
 		
 		for (int x = 1; i2.hasNext() && x <= 10; x++)
 		{
@@ -270,7 +271,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, 400 - lineWidth / 2, 50 + 20 * x);
+			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, 60 + 25 * x);
 		}
 		
 		i2 = s2.iterator();
@@ -281,7 +282,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, 400 - lineWidth / 2, 310 + 20 * x);
+			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, WINDOW_HEIGHT/2 + 20 + 25 * x);
 		}
 	}
 	
