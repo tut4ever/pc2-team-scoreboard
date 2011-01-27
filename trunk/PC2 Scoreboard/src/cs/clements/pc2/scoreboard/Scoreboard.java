@@ -52,7 +52,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	public String SCORE_VALUES = new File("score_values.txt").exists() ? "score_values.txt" : SERVER_IP + "/scoreboard/score_values.txt";
 	
 	public static final Font DISPLAY_FONT = new Font("Lucida Console", Font.BOLD, 22);
-	public static final int CHAR_WIDTH = 11;
+	public static final int CHAR_WIDTH = 19;
 	
 	//public static final int REFRESH_TIME = 60000;
 	
@@ -260,10 +260,10 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 		Collections.sort(s2);
 		
 		Iterator<TeamScore> i2 = s1.iterator();
-		g.setFont(g.getFont().deriveFont(Font.BOLD,28));
+		g.setFont(g.getFont().deriveFont(Font.BOLD,36));
 		g.drawString("Advanced", WINDOW_WIDTH/2 - CHAR_WIDTH * "Advanced".length() / 2, 30);
 		g.drawString("Novice", WINDOW_WIDTH/2 - CHAR_WIDTH * "Novice".length() / 2, WINDOW_HEIGHT/2 - 10);
-		g.setFont(g.getFont().deriveFont(Font.BOLD,22));
+		g.setFont(g.getFont().deriveFont(Font.BOLD,30));
 		
 		for (int x = 1; i2.hasNext() && x <= 10; x++)
 		{
@@ -271,7 +271,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, 60 + 25 * x);
+			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, 60 + 35 * x);
 		}
 		
 		i2 = s2.iterator();
@@ -282,7 +282,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			
 			int lineWidth = CHAR_WIDTH * line.length();
 			
-			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, WINDOW_HEIGHT/2 + 20 + 25 * x);
+			g.drawString(line, WINDOW_WIDTH/2 - lineWidth / 2, WINDOW_HEIGHT/2 + 25 + 35 * x);
 		}
 	}
 	
@@ -300,7 +300,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			return;
 		
 		
-		if (run.getJudgementName().equals("Yes") && !run.isDeleted())
+		if (run.getJudgementName().equals("Yes") && run.isFinalJudged() &&!run.isDeleted())
 		{
 			Point prevScore = scores.get(name);
 			int score = (int) prevScore.getX();

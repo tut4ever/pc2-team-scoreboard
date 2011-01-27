@@ -1,9 +1,16 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,12 +31,11 @@ public class Checker
 		wrongAnswer="No - Wrong Answer", 
 		runtimeError="No - Run-time Error";
 		
-	@SuppressWarnings("unused")
 	private static final String
 		correctNoError = "Yes",
-		correctError = "There was a peculiar error while processing your program. One of our contest staff will manually remove this message with your error. Unless there isn't much time left, it would be advisable to move on and check back here in a few minutes.",
-		incorrectNoError = "While the output was incorrect, no error was produced by this program.",
-		incorrectError = "(an error should be here)";
+		correctError = "There was a peculiar error while processing your program. One of our contest staff <i>should</i> be able to manually remove this message and replace with your error. Unless there is not much time left, it would be advisable to move on and check back here in a few minutes.",
+		incorrectNoError = "While the output was incorrect, no error was produced by this program.";
+		//incorrectError = "(an error should be here)";
 	
 	private boolean check(File f1, File f2) throws Exception
 	{
@@ -79,7 +85,7 @@ public class Checker
 			//Something is wrong with PC^2 calling the Validator. You cannot test in an IDE such as JCreator or Eclipse.
 			if(kevin.length < 4)
 			{
-				System.out.println("INVALID ARGUMENTS - " + java.util.Arrays.toString(kevin) + ". Note that you must use PC^2 to call the validator. You cannot use an IDE such as JCreator or Eclipse");
+				System.out.println("INVALID ARGUMENTS - " + java.util.Arrays.toString(kevin) + ". Note that you must use PC^2 to call the validator. You cannot use an IDE such as JCreator or Eclipse.");
 				System.exit(2); //Random number that PC^2 records that could be used for debugging. 1 is the general standard for errors.
 			}
 			
@@ -206,7 +212,7 @@ public class Checker
 				}
 				
 				byte[] sourceFile = getBytesFromFile(javaFile);
-				String md5;
+				String md5 = null;
 				
 				
 				try
@@ -232,6 +238,20 @@ public class Checker
 					e.printStackTrace();
 					System.exit(1);
 				}
+				
+				
+				ResultSet r = s.executeQuery("SELECT * FROM errorsystem.errors WHERE md5='" + md5 + "'");
+				
+				if(!r.first())
+				{
+					s.executeUpdate("INSERT INTO errorsystem.errors (run, team, md5, error) VALUES ('0','0','" + md5 + "','" + viewableResponse.replace("'","\'") + "')");
+					//System.err.println("INSERT INTO errorsystem.errors (md5, error) VALUES ('" + md5 + "','" + viewableResponse.replace("'","\'") + "')");
+				}
+				else
+				{
+					s.executeUpdate("UPDATE errorsystem.errors SET error='" + viewableResponse.replace("'","\'") + "' WHERE md5='" + md5 + "' LIMIT 1");
+				}
+				
 				
 				/*
 				 * 
