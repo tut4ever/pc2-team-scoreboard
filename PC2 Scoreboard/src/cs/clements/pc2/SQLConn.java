@@ -2,6 +2,7 @@ package cs.clements.pc2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -25,10 +26,10 @@ public class SQLConn
 			
 			String url = "jdbc:mysql://192.168.0.1:3306";
 			
-			Connection con = null;
+			con = null;
 
-			con = DriverManager.getConnection(url,"validator","contest3");			
-			s = con.createStatement();		
+			con = DriverManager.getConnection(url,"validator","contest3");
+			s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);		
 			
 		}
 		catch(SQLException e)

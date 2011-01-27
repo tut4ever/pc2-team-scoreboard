@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -25,14 +28,21 @@ import edu.csus.ecs.pc2.api.listener.IRunEventListener;
 //Will store runs in the SQL database
 public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, IRunEventListener 
 {
-	private static final int REFRESH_TIME = 30000;
+	private static final int REFRESH_TIME = 5000;
 	private IContest contest;
 	private ServerConnection server;
 	private JFrame frame;
+
 	
+	private SQLConn con;
+	private Statement s;
 	private HashSet<Integer> trackedRuns;
 	public SQLPC2Link(String...args)
 	{
+		con = new SQLConn();
+		con.getConnection();
+		s = con.getStatement();
+		
 		trackedRuns = new HashSet<Integer>();
 		
 		server = new ServerConnection();
@@ -49,8 +59,11 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 			System.exit(1);
 		}
 		
-		String login = in.nextLine();
-		String password = in.nextLine();
+		/*String login = in.nextLine();
+		String password = in.nextLine();*/
+		
+		String login = "administrator2";
+		String password = "admin2";
 		
 		in.close();
 		
@@ -72,6 +85,8 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 		frame.addKeyListener(this);	
 		frame.setVisible(true);
 		
+		getRuns();
+		
 		new Timer(REFRESH_TIME, this).start();
 	}
 	
@@ -85,13 +100,26 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 		for(IRun run: runs)
 		{
 			runNumber = run.getNumber();
+						
 			if(!trackedRuns.contains(runNumber))
-			{
+			{	
+				byte[][]sourceFile1;
+				try
+				{
+					sourceFile1 = run.getSourceCodeFileContents();
+				}
+				catch(Exception e)
+				{
+					continue;
+				}
+				
+				byte[]sourceFile;
+				if(sourceFile1.length == 0)
+					continue;
+				else
+					sourceFile = sourceFile1[0];
+				
 				trackedRuns.add(runNumber);
-				
-				byte[]sourceFile = run.getSourceCodeFileContents()[0];
-				
-				@SuppressWarnings("unused")
 				String md5 = null;
 				
 				try
@@ -124,6 +152,57 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 				//md5 = md5
 				//Run Number = runNumber
 				
+				
+				try
+				{
+					//Add check for duplicate run number
+					
+					
+					ResultSet r = s.executeQuery("SELECT * FROM errorsystem.errors WHERE md5='" + md5 + "'");
+					//System.out.println(con.getConnection());
+					s = con.getConnection().createStatement();
+					ResultSet r1 = s.executeQuery("SELECT * FROM errorsystem.errors WHERE md5='" + md5 + "' AND error=''");
+					
+					if(r1.first())
+					{
+						s.executeUpdate("UPDATE errorsystem.errors SET team='"+ run.getTeam().getAccountNumber() + "', run='" + runNumber + "' WHERE md5='" + md5 + "' AND error='' LIMIT 1");
+						System.out.println("Updated run " + runNumber + " in SQL");
+					}
+					else if(!r.first())
+					{
+						s.executeUpdate("INSERT INTO errorsystem.errors (md5, run, team, error) VALUES ('" + md5 + "','" + runNumber + "','" + run.getTeam().getAccountNumber() +  "','')");
+						System.out.println("Added run " + runNumber + " to SQL");
+					}
+					else
+					{
+						//System.out.println("Replacing a non-blank run?");
+						s.executeUpdate("UPDATE errorsystem.errors SET team='"+ run.getTeam().getAccountNumber() + "', run='" + runNumber + "' WHERE md5='" + md5 + "' LIMIT 1");
+						System.out.println("Updated run " + runNumber + " in SQL");
+					}
+				}
+				catch(com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e)
+				{
+					System.out.println("Integrity Exception");
+				}
+				catch(SQLException e)
+				{
+					e.printStackTrace();
+					trackedRuns.remove(new Integer(runNumber));
+					
+					try
+					{
+						Thread.sleep(500);
+					}
+					catch (InterruptedException e1)
+					{
+						e1.printStackTrace();
+					}
+				}
+				
+				
+				
+				
+				
 				/*
 				 * 
 				 * if(SELECT * FROM errors WHERE md5=java md5)
@@ -149,6 +228,7 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 	{
 		try
 		{
+			con.close();
 			if(server.logoff())
 				System.out.println("Logged off");
 			else
@@ -236,6 +316,7 @@ public class SQLPC2Link implements KeyListener, WindowListener, ActionListener, 
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
+		
 		getRuns();
 		
 	}
