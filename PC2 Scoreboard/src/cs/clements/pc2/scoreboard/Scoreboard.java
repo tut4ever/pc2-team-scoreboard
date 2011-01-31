@@ -15,6 +15,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -379,17 +380,80 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 	
 	public void runValidating(IRun run, boolean isFinal) {}
 	
-	public void keyReleased(KeyEvent e) 
-	{
-		
-	}
+	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
 	public void keyPressed(KeyEvent e)
 	{
 		if(e.getKeyCode()==KeyEvent.VK_R)
-				reloadTeams();
-	
+			reloadTeams();
+		if(e.getKeyCode()==KeyEvent.VK_W)
+			writeTeamList();
 		actionPerformed(null);
+	}
+	
+	
+	public boolean writeTeamList()
+	{
+		FileWriter writer=null;
+		
+		Iterator<Map.Entry<String, Point>> i = scores.entrySet().iterator();
+		LinkedList<TeamScore> s1 = new LinkedList<TeamScore>();
+		LinkedList<TeamScore> s2 = new LinkedList<TeamScore>();
+		
+		while (i.hasNext())
+		{
+			Map.Entry<String, Point> sd = i.next();
+			TeamScore sc = new TeamScore(sd.getKey(), (int) sd.getValue().getX(), (int) sd.getValue().getY());
+			
+			
+			@SuppressWarnings("unused")
+			LinkedList<TeamScore> list = advTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)) ? s1 : s2;
+			
+			if (advTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)))
+			{
+				s1.add(sc);
+			}
+			else if (novTeams.contains("team"+sc.name.substring(sc.name.lastIndexOf(" ")+1)))
+			{
+				s2.add(sc);
+			}
+			else
+			{
+				System.out.println("Erroneous team added");
+			}
+		}
+		
+		Collections.sort(s1);
+		Collections.sort(s2);
+		
+		Iterator<TeamScore> i2 = s1.iterator();
+		try 
+		{
+			writer = new FileWriter(new File("Team Scores.txt"));
+			writer.write("------ADVANCED------\n\n");
+			for (int x = 1; i2.hasNext(); x++)
+			{
+				TeamScore a = i2.next();
+				writer.write(a.name +"|"+ a.score+"\n");
+			}
+			
+			i2 = s2.iterator();
+			writer.write("\n------NOVICE------\n\n");
+			for (int x = 1; i2.hasNext(); x++)
+			{
+				TeamScore a = i2.next();
+				writer.write(a.name +"|"+ a.score+"\n");
+			}
+			writer.close();
+			System.out.println("Score file written.");
+			return true;
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("Problem writing team list to file.");
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	// Update scores to get initial scores or refresh scores
@@ -402,9 +466,7 @@ public class Scoreboard extends JPanel implements IRunEventListener, ActionListe
 			if (team.isDisplayableOnScoreboard())
 			{
 				String name = team.getLoginName();
-				if (novTeams.contains(name))
-					name ="Team "+name.substring(name.lastIndexOf("m")+1);
-				else if (advTeams.contains(name))
+				if (novTeams.contains(name) || advTeams.contains(name))
 					name ="Team "+name.substring(name.lastIndexOf("m")+1);
 				else continue;
 				
