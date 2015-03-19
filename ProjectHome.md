@@ -1,0 +1,1 @@
+A scoreboard for PC^2 that factors in novice and advanced teams
